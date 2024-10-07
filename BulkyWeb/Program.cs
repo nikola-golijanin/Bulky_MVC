@@ -1,16 +1,22 @@
 using BulkyWeb.Data;
+using BulkyWeb.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+var useInMemoryDb = builder.Configuration.GetValue<bool>("USE_INMEMORY_DB");
 
-var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
-
+if (useInMemoryDb)
+    builder.Services.RegisterInMemoryDatabase();
+else
+    builder.Services.RegisterPostgresDatabase(builder.Configuration);
 
 var app = builder.Build();
+
+if(useInMemoryDb)
+    app.Services.ApplyMigrationsToInMemoryDB();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
