@@ -24,12 +24,32 @@ public class CategoryController : Controller
     [HttpPost]
     public IActionResult Create(Category category)
     {
-        //if (string.Equals(category.Name, category.DisplayOrder.ToString(), StringComparison.OrdinalIgnoreCase))
-        //    ModelState.AddModelError("Name", "Display order cannot match the Name");
+        if (string.Equals(category.Name, category.DisplayOrder.ToString(), StringComparison.OrdinalIgnoreCase))
+            ModelState.AddModelError("Name", "Display order cannot match the Name");
 
         if (!ModelState.IsValid) return View();
 
         _context.Categories.Add(category);
+        _context.SaveChanges();
+        return RedirectToAction("Index");
+    }
+
+    public IActionResult Edit(int? id)
+    {
+        if (id is null) return NotFound();
+
+        var category = _context.Categories.FirstOrDefault(c => c.Id == id);
+        if (category is null) return NotFound();
+
+        return View(category);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(Category category)
+    {
+        if (!ModelState.IsValid) return View();
+
+        _context.Categories.Update(category);
         _context.SaveChanges();
         return RedirectToAction("Index");
     }
