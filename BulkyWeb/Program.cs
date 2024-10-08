@@ -1,6 +1,4 @@
-using BulkyWeb.Data;
 using BulkyWeb.Extensions;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +13,7 @@ else
 
 var app = builder.Build();
 
-if(useInMemoryDb)
+if (useInMemoryDb)
     app.Services.ApplyMigrationsToInMemoryDB();
 
 // Configure the HTTP request pipeline.

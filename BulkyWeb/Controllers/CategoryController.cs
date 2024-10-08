@@ -71,7 +71,7 @@ public class CategoryController : Controller
     {
         var category = _context.Categories.FirstOrDefault(c => c.Id == id);
         if (category is null) return NotFound();
-        
+
         _context.Categories.Remove(category);
         _context.SaveChanges();
         TempData["success"] = "Category deleted successfully";
