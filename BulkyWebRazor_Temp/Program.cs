@@ -1,9 +1,20 @@
+using BulkyWebRazor_Temp.Extensions;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+var useInMemoryDb = builder.Configuration.GetValue<bool>("USE_INMEMORY_DB");
+
+if (useInMemoryDb)
+    builder.Services.RegisterInMemoryDatabase();
+else
+    builder.Services.RegisterPostgresDatabase(builder.Configuration);
 
 var app = builder.Build();
+
+if (useInMemoryDb)
+    app.Services.ApplyMigrationsToInMemoryDB();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
