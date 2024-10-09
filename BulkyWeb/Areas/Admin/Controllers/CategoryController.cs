@@ -2,8 +2,9 @@
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BulkyWeb.Controllers;
+namespace BulkyWeb.Areas.Admin.Controllers;
 
+[Area("Admin")]
 public class CategoryController : Controller
 {
     private readonly ICategoryRepository _categoryRepository;
