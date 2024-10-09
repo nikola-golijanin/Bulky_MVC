@@ -5,16 +5,20 @@ namespace BulkyWeb.Extensions;
 
 public static class DatabaseExtensions
 {
-    public static void RegisterPostgresDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("PostgresConnection");
-        services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+        if (configuration.GetValue<bool>("USE_INMEMORY_DB"))
+            services.RegisterInMemoryDatabase();
+        else
+            services.RegisterPostgresDatabase(configuration);
+
+        return services;
     }
 
-    public static void RegisterInMemoryDatabase(this IServiceCollection services)
-    {
-        services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
-    }
+    private static void RegisterPostgresDatabase(this IServiceCollection services, IConfiguration configuration) => services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+
+    private static void RegisterInMemoryDatabase(this IServiceCollection services)
+        => services.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("InMemoryDb"));
 
     public static void ApplyMigrationsToInMemoryDB(this IServiceProvider services)
     {

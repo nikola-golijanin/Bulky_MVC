@@ -3,17 +3,15 @@ using BulkyWeb.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-var useInMemoryDb = builder.Configuration.GetValue<bool>("USE_INMEMORY_DB");
-
-if (useInMemoryDb)
-    builder.Services.RegisterInMemoryDatabase();
-else
-    builder.Services.RegisterPostgresDatabase(builder.Configuration);
+builder
+    .Services
+    .RegisterDatabase(builder.Configuration)
+    .RegisterRepositories()
+    .AddControllersWithViews();
 
 var app = builder.Build();
 
-if (useInMemoryDb)
+if (builder.Configuration.GetValue<bool>("USE_INMEMORY_DB"))
     app.Services.ApplyMigrationsToInMemoryDB();
 
 // Configure the HTTP request pipeline.
@@ -25,6 +23,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
 
 app.UseRouting();
