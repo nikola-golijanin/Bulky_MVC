@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace BulkyWeb.Models;
+namespace Domain.Models;
 
 public class Category
 {
@@ -15,6 +15,6 @@ public class Category
 
     [Required]
     [DisplayName("Display Order")]
-    [Range(1,100, ErrorMessage="Display order must be between 1 and 100")]
+    [Range(1, 100, ErrorMessage = "Display order must be between 1 and 100")]
     public int DisplayOrder { get; set; }
 }
