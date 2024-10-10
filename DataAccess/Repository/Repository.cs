@@ -20,7 +20,7 @@ public class Repository<T> : IRepository<T> where T : class
 
     public IEnumerable<T> GetAll() => _dbSet.ToList();
 
-    public T GetFirstOrDefault(Expression<Func<T, bool>> predicate) => _dbSet.FirstOrDefault(predicate);
+    public T? GetFirstOrDefault(Expression<Func<T, bool>> predicate) => _dbSet.FirstOrDefault(predicate);
 
     public void Remove(T entity) => _dbSet.Remove(entity);
 
