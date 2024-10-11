@@ -12,16 +12,18 @@ public class ProductController : Controller
 {
 	private readonly IProductRepository _productRepository;
 	private readonly ICategoryRepository _categoryRepository;
+	private readonly IWebHostEnvironment _hostingEnvironment;
 
-	public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
+	public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IWebHostEnvironment hostingEnvironment)
 	{
 		_productRepository = productRepository;
 		_categoryRepository = categoryRepository;
+		_hostingEnvironment = hostingEnvironment;
 	}
 
 	public IActionResult Index()
 	{
-		var products = _productRepository.GetAllIncluding(p => p.Category);
+		var products = _productRepository.GetAll(including: nameof(Product.Category));
 		return View(products);
 	}
 
@@ -29,29 +31,33 @@ public class ProductController : Controller
 	{
 		var productVm = new ProductVM
 		{
-			CategoryList = _categoryRepository.GetAllQueryable(c => new SelectListItem
-			{
-				Value = c.Id.ToString(),
-				Text = c.Name
-			})
+			CategoryList = GetCategoryListSelectItems(_categoryRepository)
 		};
 
 		return View(productVm);
 	}
 
 	[HttpPost]
-	public IActionResult Create(ProductVM productVm)
+	public IActionResult Create(ProductVM productVm, IFormFile? imageFile)
 	{
 		if (!ModelState.IsValid)
 		{
-			productVm.CategoryList = _categoryRepository.GetAllQueryable(c => new SelectListItem
-			{
-				Value = c.Id.ToString(),
-				Text = c.Name
-			});
+			productVm.CategoryList = GetCategoryListSelectItems(_categoryRepository);
 			return View(productVm);
 		}
 
+		if (imageFile is not null)
+		{
+			var wwwRootPath = _hostingEnvironment.WebRootPath;
+			var filename = Guid.NewGuid().ToString() // Create a unique name
+				+ Path.GetExtension(imageFile.FileName); // Get the extension of the file
+
+			var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
+
+			using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
+			imageFile.CopyTo(fileStream);
+			productVm.ImageUrl = @"\images\product\" + filename;
+		}
 		var product = (Product)productVm;
 		_productRepository.Add(product);
 		_productRepository.SaveChanges();
@@ -66,14 +72,37 @@ public class ProductController : Controller
 		var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
 		if (product is null) return NotFound();
 
+		ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
 		return View(product);
 	}
 
 	[HttpPost]
-	public IActionResult Edit(Product product)
+	public IActionResult Edit(Product product, IFormFile? imageFile)
 	{
-		if (!ModelState.IsValid) return View();
+		if (!ModelState.IsValid)
+		{
+			ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+			return View();
+		}
+		if (imageFile is not null)
+		{
+			var wwwRootPath = _hostingEnvironment.WebRootPath;
+			var filename = Guid.NewGuid().ToString() // Create a unique name
+				+ Path.GetExtension(imageFile.FileName); // Get the extension of the file
 
+			var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
+
+			if (!string.IsNullOrEmpty(product.ImageUrl))
+			{
+				var imagePath = wwwRootPath + product.ImageUrl;
+				if (System.IO.File.Exists(imagePath))
+					System.IO.File.Delete(imagePath);
+			}
+
+			using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
+			imageFile.CopyTo(fileStream);
+			product.ImageUrl = @"\images\product\" + filename;
+		}
 		_productRepository.Update(product);
 		_productRepository.SaveChanges();
 		TempData["success"] = "Product updated successfully";
@@ -102,4 +131,11 @@ public class ProductController : Controller
 		TempData["success"] = "Product deleted successfully";
 		return RedirectToAction("Index");
 	}
+
+	private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryRepository categoryRepository)
+		=> categoryRepository.GetAllQueryable(c => new SelectListItem
+		{
+			Value = c.Id.ToString(),
+			Text = c.Name
+		});
 }

@@ -44,7 +44,7 @@ public class ProductVM
 	[Display(Name = "Category")]
 	public int CategoryId { get; set; }
 
-	[Required]
+	[ValidateNever]
 	public string ImageUrl { get; set; }
 
 	[ValidateNever]

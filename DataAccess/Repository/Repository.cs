@@ -18,9 +18,22 @@ public class Repository<T> : IRepository<T> where T : class
 
 	public void Add(T entity) => _dbSet.Add(entity);
 
-	public IEnumerable<T> GetAll() => _dbSet.ToList();
+	public IEnumerable<T> GetAll(params string[] including)
+	{
+		IQueryable<T> query = _dbSet;
+		foreach (var relatedEntity in including)
+			query = query.Include(relatedEntity);
+		return query.ToList();
+	}
 
-	public T? GetFirstOrDefault(Expression<Func<T, bool>> predicate) => _dbSet.FirstOrDefault(predicate);
+	public T? GetFirstOrDefault(Expression<Func<T, bool>> predicate, params string[] including)
+	{
+		IQueryable<T> query = _dbSet;
+		foreach (var relatedEntity in including)
+			query = query.Include(relatedEntity);
+
+		return query.FirstOrDefault(predicate);
+	}
 
 	public void Remove(T entity) => _dbSet.Remove(entity);
 

@@ -1,7 +1,5 @@
 ﻿using DataAccess.Data;
 using Domain.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
 
 namespace DataAccess.Repository.Products;
 public class ProductRepository : Repository<Product>, IProductRepository
@@ -12,11 +10,6 @@ public class ProductRepository : Repository<Product>, IProductRepository
 	{
 		_context = context;
 	}
-
-	public IEnumerable<Product> GetAllIncluding<TProperty>(Expression<Func<Product, TProperty>> includeProperty)
-		=> _context.Products
-			.Include(includeProperty)
-			.ToList();
 
 	public void Update(Product product) => _context.Products.Update(product);
 }
