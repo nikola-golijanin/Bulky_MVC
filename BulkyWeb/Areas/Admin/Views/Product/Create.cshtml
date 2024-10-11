@@ -1,4 +1,4 @@
-﻿@model Product
+﻿@model ProductVM
 
 <div class="card shadow border-0 my-4">
 	<div class="card-header bg-secondary bg-gradient ml-0 py-3">
@@ -52,12 +52,17 @@
 					<label asp-for="PriceFor100" class="ms-2"></label>
 					<span asp-validation-for="PriceFor100" class="text-danger"></span>
 				</div>
+				<div class="form-floating py-2 col-12">
+					<input asp-for="ImageUrl" class="form-control border-0 shadow" />
+					<label asp-for="ImageUrl" class="ms-2"></label>
+					<span asp-validation-for="ImageUrl" class="text-danger"></span>
+				</div>
 
 				<div class="form-floating py-2 col-12">
-					<select asp-for="CategoryId" asp-items="ViewBag.CategoryList" class="form-control border-0 shadow">
+					<select asp-for="CategoryId" asp-items="@Model.CategoryList" class="form-control border-0 shadow">
 						<option disabled selected>-- Select category --</option>
 					</select>
-					<label asp-for="Category" class="ms-2"></label>
+					<label asp-for="CategoryId" class="ms-2"></label>
 				<span asp-validation-for="CategoryId" class="text-danger"></span>
 			</div>
 				<div class="row pt-2">

@@ -1,4 +1,5 @@
-﻿using DataAccess.Repository.Categories;
+﻿using BulkyWeb.ViewModels;
+using DataAccess.Repository.Categories;
 using DataAccess.Repository.Products;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -26,21 +27,32 @@ public class ProductController : Controller
 
 	public IActionResult Create()
 	{
-		var categoryList = _categoryRepository.GetAllQueryable(c => new SelectListItem
+		var productVm = new ProductVM
 		{
-			Value = c.Id.ToString(),
-			Text = c.Name
-		});
+			CategoryList = _categoryRepository.GetAllQueryable(c => new SelectListItem
+			{
+				Value = c.Id.ToString(),
+				Text = c.Name
+			})
+		};
 
-		ViewBag.CategoryList = categoryList;
-		return View();
+		return View(productVm);
 	}
 
 	[HttpPost]
-	public IActionResult Create(Product product)
+	public IActionResult Create(ProductVM productVm)
 	{
-		if (!ModelState.IsValid) return View();
+		if (!ModelState.IsValid)
+		{
+			productVm.CategoryList = _categoryRepository.GetAllQueryable(c => new SelectListItem
+			{
+				Value = c.Id.ToString(),
+				Text = c.Name
+			});
+			return View(productVm);
+		}
 
+		var product = (Product)productVm;
 		_productRepository.Add(product);
 		_productRepository.SaveChanges();
 		TempData["success"] = "Product created successfully";
@@ -58,11 +70,11 @@ public class ProductController : Controller
 	}
 
 	[HttpPost]
-	public IActionResult Edit(Product Product)
+	public IActionResult Edit(Product product)
 	{
 		if (!ModelState.IsValid) return View();
 
-		_productRepository.Update(Product);
+		_productRepository.Update(product);
 		_productRepository.SaveChanges();
 		TempData["success"] = "Product updated successfully";
 		return RedirectToAction("Index");

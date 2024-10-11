@@ -20,22 +20,18 @@ public class Product
 	public string Author { get; set; }
 
 	[Required]
-	[Display(Name = "List price")]
 	[Range(1, 1000)]
 	public double ListPrice { get; set; }
 
 	[Required]
-	[Display(Name = "Price for 1-50")]
 	[Range(1, 1000)]
 	public double Price { get; set; }
 
 	[Required]
-	[Display(Name = "Price for 50+")]
 	[Range(1, 1000)]
 	public double PriceFor50 { get; set; }
 
 	[Required]
-	[Display(Name = "Price for 100+")]
 	[Range(1, 1000)]
 	public double PriceFor100 { get; set; }
 
