@@ -10,132 +10,137 @@ namespace BulkyWeb.Areas.Admin.Controllers;
 [Area("Admin")]
 public class ProductController : Controller
 {
-	private readonly IProductRepository _productRepository;
-	private readonly ICategoryRepository _categoryRepository;
-	private readonly IWebHostEnvironment _hostingEnvironment;
+    private readonly IProductRepository _productRepository;
+    private readonly ICategoryRepository _categoryRepository;
+    private readonly IWebHostEnvironment _hostingEnvironment;
 
-	public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IWebHostEnvironment hostingEnvironment)
-	{
-		_productRepository = productRepository;
-		_categoryRepository = categoryRepository;
-		_hostingEnvironment = hostingEnvironment;
-	}
+    public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IWebHostEnvironment hostingEnvironment)
+    {
+        _productRepository = productRepository;
+        _categoryRepository = categoryRepository;
+        _hostingEnvironment = hostingEnvironment;
+    }
 
-	public IActionResult Index()
-	{
-		var products = _productRepository.GetAll(including: nameof(Product.Category));
-		return View(products);
-	}
+    #region Views
+    public IActionResult Index()
+    {
+        var products = _productRepository.GetAll(including: nameof(Product.Category));
+        return View(products);
+    }
 
-	public IActionResult Create()
-	{
-		var productVm = new ProductVM
-		{
-			CategoryList = GetCategoryListSelectItems(_categoryRepository)
-		};
+    public IActionResult Create()
+    {
+        var productVm = new ProductVM
+        {
+            CategoryList = GetCategoryListSelectItems(_categoryRepository)
+        };
 
-		return View(productVm);
-	}
+        return View(productVm);
+    }
 
-	[HttpPost]
-	public IActionResult Create(ProductVM productVm, IFormFile? imageFile)
-	{
-		if (!ModelState.IsValid)
-		{
-			productVm.CategoryList = GetCategoryListSelectItems(_categoryRepository);
-			return View(productVm);
-		}
+    [HttpPost]
+    public IActionResult Create(ProductVM productVm, IFormFile? imageFile)
+    {
+        if (!ModelState.IsValid)
+        {
+            productVm.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+            return View(productVm);
+        }
 
-		if (imageFile is not null)
-		{
-			var wwwRootPath = _hostingEnvironment.WebRootPath;
-			var filename = Guid.NewGuid().ToString() // Create a unique name
-				+ Path.GetExtension(imageFile.FileName); // Get the extension of the file
+        if (imageFile is not null)
+        {
+            var wwwRootPath = _hostingEnvironment.WebRootPath;
+            var filename = Guid.NewGuid().ToString() // Create a unique name
+                + Path.GetExtension(imageFile.FileName); // Get the extension of the file
 
-			var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
+            var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
 
-			using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
-			imageFile.CopyTo(fileStream);
-			productVm.ImageUrl = @"\images\product\" + filename;
-		}
-		var product = (Product)productVm;
-		_productRepository.Add(product);
-		_productRepository.SaveChanges();
-		TempData["success"] = "Product created successfully";
-		return RedirectToAction("Index");
-	}
+            using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
+            imageFile.CopyTo(fileStream);
+            productVm.ImageUrl = @"\images\product\" + filename;
+        }
+        var product = (Product)productVm;
+        _productRepository.Add(product);
+        _productRepository.SaveChanges();
+        TempData["success"] = "Product created successfully";
+        return RedirectToAction("Index");
+    }
 
-	public IActionResult Edit(int? id)
-	{
-		if (id is null) return NotFound();
+    public IActionResult Edit(int? id)
+    {
+        if (id is null) return NotFound();
 
-		var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
-		if (product is null) return NotFound();
+        var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
+        if (product is null) return NotFound();
 
-		ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
-		return View(product);
-	}
+        ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+        return View(product);
+    }
 
-	[HttpPost]
-	public IActionResult Edit(Product product, IFormFile? imageFile)
-	{
-		if (!ModelState.IsValid)
-		{
-			ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
-			return View();
-		}
-		if (imageFile is not null)
-		{
-			var wwwRootPath = _hostingEnvironment.WebRootPath;
-			var filename = Guid.NewGuid().ToString() // Create a unique name
-				+ Path.GetExtension(imageFile.FileName); // Get the extension of the file
+    [HttpPost]
+    public IActionResult Edit(Product product, IFormFile? imageFile)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+            return View();
+        }
+        if (imageFile is not null)
+        {
+            var wwwRootPath = _hostingEnvironment.WebRootPath;
+            var filename = Guid.NewGuid().ToString() // Create a unique name
+                + Path.GetExtension(imageFile.FileName); // Get the extension of the file
 
-			var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
+            var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
 
-			if (!string.IsNullOrEmpty(product.ImageUrl))
-			{
-				var imagePath = wwwRootPath + product.ImageUrl;
-				if (System.IO.File.Exists(imagePath))
-					System.IO.File.Delete(imagePath);
-			}
+            if (!string.IsNullOrEmpty(product.ImageUrl))
+            {
+                var imagePath = wwwRootPath + product.ImageUrl;
+                if (System.IO.File.Exists(imagePath))
+                    System.IO.File.Delete(imagePath);
+            }
 
-			using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
-			imageFile.CopyTo(fileStream);
-			product.ImageUrl = @"\images\product\" + filename;
-		}
-		_productRepository.Update(product);
-		_productRepository.SaveChanges();
-		TempData["success"] = "Product updated successfully";
-		return RedirectToAction("Index");
-	}
+            using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
+            imageFile.CopyTo(fileStream);
+            product.ImageUrl = @"\images\product\" + filename;
+        }
+        _productRepository.Update(product);
+        _productRepository.SaveChanges();
+        TempData["success"] = "Product updated successfully";
+        return RedirectToAction("Index");
+    }
+    #endregion
 
-	public IActionResult Delete(int? id)
-	{
-		if (id is null) return NotFound();
+    #region API
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var products = _productRepository.GetAll(including: nameof(Product.Category));
+        return Json(new { data = products });
+    }
 
-		var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
-		if (product is null) return NotFound();
+    [HttpDelete]
+    public IActionResult Delete(int id)
+    {
+        var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
+        if (product is null) return NotFound();
 
-		return View(product);
-	}
+        // Delete the image
+        var imagePath = _hostingEnvironment.WebRootPath + product.ImageUrl;
+        if (System.IO.File.Exists(imagePath))
+            System.IO.File.Delete(imagePath);
 
-	[HttpPost, ActionName("Delete")]
-	public IActionResult DeleteProduct(int? id)
-	{
+        _productRepository.Remove(product);
+        _productRepository.SaveChanges();
+        return Ok("Product deleted successfully");
+    }
+    #endregion
 
-		var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
-		if (product is null) return NotFound();
-
-		_productRepository.Remove(product);
-		_productRepository.SaveChanges();
-		TempData["success"] = "Product deleted successfully";
-		return RedirectToAction("Index");
-	}
-
-	private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryRepository categoryRepository)
-		=> categoryRepository.GetAllQueryable(c => new SelectListItem
-		{
-			Value = c.Id.ToString(),
-			Text = c.Name
-		});
+    private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryRepository categoryRepository)
+        => categoryRepository.GetAllQueryable(c => new SelectListItem
+        {
+            Value = c.Id.ToString(),
+            Text = c.Name
+        });
 }
+
