@@ -6,6 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Services
     .RegisterDatabase(builder.Configuration)
+    .RegisterServices()
     .RegisterRepositories()
     .AddControllersWithViews();
 

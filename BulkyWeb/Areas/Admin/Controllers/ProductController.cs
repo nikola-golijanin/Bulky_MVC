@@ -1,30 +1,28 @@
 ﻿using BulkyWeb.ViewModels;
-using DataAccess.Repository.Categories;
-using DataAccess.Repository.Products;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Service.Categories;
+using Service.Products;
 
 namespace BulkyWeb.Areas.Admin.Controllers;
 
 [Area("Admin")]
 public class ProductController : Controller
 {
-    private readonly IProductRepository _productRepository;
-    private readonly ICategoryRepository _categoryRepository;
-    private readonly IWebHostEnvironment _hostingEnvironment;
+    private readonly IProductService _productService;
+    private readonly ICategoryService _categoryService;
 
-    public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository, IWebHostEnvironment hostingEnvironment)
+    public ProductController(IProductService productService, ICategoryService categoryService)
     {
-        _productRepository = productRepository;
-        _categoryRepository = categoryRepository;
-        _hostingEnvironment = hostingEnvironment;
+        _productService = productService;
+        _categoryService = categoryService;
     }
 
     #region Views
     public IActionResult Index()
     {
-        var products = _productRepository.GetAll(including: nameof(Product.Category));
+        var products = _productService.GetAll(including: nameof(Product.Category));
         return View(products);
     }
 
@@ -32,7 +30,7 @@ public class ProductController : Controller
     {
         var productVm = new ProductVM
         {
-            CategoryList = GetCategoryListSelectItems(_categoryRepository)
+            CategoryList = GetCategoryListSelectItems(_categoryService)
         };
 
         return View(productVm);
@@ -43,37 +41,23 @@ public class ProductController : Controller
     {
         if (!ModelState.IsValid)
         {
-            productVm.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+            productVm.CategoryList = GetCategoryListSelectItems(_categoryService);
+
             return View(productVm);
         }
 
-        if (imageFile is not null)
-        {
-            var wwwRootPath = _hostingEnvironment.WebRootPath;
-            var filename = Guid.NewGuid().ToString() // Create a unique name
-                + Path.GetExtension(imageFile.FileName); // Get the extension of the file
-
-            var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
-
-            using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
-            imageFile.CopyTo(fileStream);
-            productVm.ImageUrl = @"\images\product\" + filename;
-        }
-        var product = (Product)productVm;
-        _productRepository.Add(product);
-        _productRepository.SaveChanges();
+        _productService.Create((Product)productVm, imageFile);
         TempData["success"] = "Product created successfully";
         return RedirectToAction("Index");
     }
 
-    public IActionResult Edit(int? id)
+    public IActionResult Edit(int id)
     {
-        if (id is null) return NotFound();
+        //if (id is null) return NotFound();
 
-        var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
-        if (product is null) return NotFound();
+        var product = _productService.GetById(id);
 
-        ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+        ViewBag.CategoryList = GetCategoryListSelectItems(_categoryService);
         return View(product);
     }
 
@@ -82,30 +66,12 @@ public class ProductController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.CategoryList = GetCategoryListSelectItems(_categoryRepository);
+            ViewBag.CategoryList = GetCategoryListSelectItems(_categoryService);
             return View();
         }
-        if (imageFile is not null)
-        {
-            var wwwRootPath = _hostingEnvironment.WebRootPath;
-            var filename = Guid.NewGuid().ToString() // Create a unique name
-                + Path.GetExtension(imageFile.FileName); // Get the extension of the file
 
-            var productImagesDirPath = Path.Combine(wwwRootPath, @"images\product");
+        _productService.Update(product, imageFile);
 
-            if (!string.IsNullOrEmpty(product.ImageUrl))
-            {
-                var imagePath = wwwRootPath + product.ImageUrl;
-                if (System.IO.File.Exists(imagePath))
-                    System.IO.File.Delete(imagePath);
-            }
-
-            using var fileStream = new FileStream(Path.Combine(productImagesDirPath, filename), FileMode.Create);
-            imageFile.CopyTo(fileStream);
-            product.ImageUrl = @"\images\product\" + filename;
-        }
-        _productRepository.Update(product);
-        _productRepository.SaveChanges();
         TempData["success"] = "Product updated successfully";
         return RedirectToAction("Index");
     }
@@ -115,29 +81,20 @@ public class ProductController : Controller
     [HttpGet]
     public IActionResult GetAll()
     {
-        var products = _productRepository.GetAll(including: nameof(Product.Category));
+        var products = _productService.GetAll(including: nameof(Product.Category));
         return Json(new { data = products });
     }
 
     [HttpDelete]
     public IActionResult Delete(int id)
     {
-        var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
-        if (product is null) return NotFound();
-
-        // Delete the image
-        var imagePath = _hostingEnvironment.WebRootPath + product.ImageUrl;
-        if (System.IO.File.Exists(imagePath))
-            System.IO.File.Delete(imagePath);
-
-        _productRepository.Remove(product);
-        _productRepository.SaveChanges();
+        _productService.Delete(id);
         return Ok("Product deleted successfully");
     }
     #endregion
 
-    private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryRepository categoryRepository)
-        => categoryRepository.GetAllQueryable(c => new SelectListItem
+    private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryService categoryService)
+        => categoryService.GetAllQueryable(c => new SelectListItem
         {
             Value = c.Id.ToString(),
             Text = c.Name

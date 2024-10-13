@@ -1,84 +1,76 @@
 ﻿using BulkyWeb.ViewModels;
-using DataAccess.Repository.Categories;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using Service.Categories;
 
 namespace BulkyWeb.Areas.Admin.Controllers;
 
 [Area("Admin")]
 public class CategoryController : Controller
 {
-	private readonly ICategoryRepository _categoryRepository;
+    private readonly ICategoryService _categoryService;
 
-	public CategoryController(ICategoryRepository categoryRepository)
-	{
-		_categoryRepository = categoryRepository;
-	}
+    public CategoryController(ICategoryService categoryService)
+    {
+        _categoryService = categoryService;
+    }
 
-	public IActionResult Index()
-	{
-		var categories = _categoryRepository.GetAll();
-		return View(categories);
-	}
+    #region Views
+    public IActionResult Index()
+    {
+        var categories = _categoryService.GetAll();
+        return View(categories);
+    }
 
-	public IActionResult Create() => View(new CategoryVM());
+    public IActionResult Create() => View(new CategoryVM());
 
-	[HttpPost]
-	public IActionResult Create(CategoryVM categoryVm)
-	{
-		if (string.Equals(categoryVm.Name, categoryVm.DisplayOrder.ToString(), StringComparison.OrdinalIgnoreCase))
-			ModelState.AddModelError("Name", "Display order cannot match the Name");
+    [HttpPost]
+    public IActionResult Create(CategoryVM categoryVm)
+    {
+        if (string.Equals(categoryVm.Name, categoryVm.DisplayOrder.ToString(), StringComparison.OrdinalIgnoreCase))
+            ModelState.AddModelError("Name", "Display order cannot match the Name");
 
-		if (!ModelState.IsValid) return View(new CategoryVM());
+        if (!ModelState.IsValid) return View(new CategoryVM());
 
-		var category = (Category)categoryVm;
-		_categoryRepository.Add(category);
-		_categoryRepository.SaveChanges();
-		TempData["success"] = "Category created successfully";
-		return RedirectToAction("Index");
-	}
+        var category = (Category)categoryVm;
+        _categoryService.Create(category);
+        TempData["success"] = "Category created successfully";
+        return RedirectToAction("Index");
+    }
 
-	public IActionResult Edit(int? id)
-	{
-		if (id is null) return NotFound();
+    public IActionResult Edit(int id)
+    {
+        //if (id is null) return NotFound();
 
-		var category = _categoryRepository.GetFirstOrDefault(c => c.Id == id);
-		if (category is null) return NotFound();
+        var category = _categoryService.GetById(id);
+        if (category is null) return NotFound();
 
-		return View(category);
-	}
+        return View(category);
+    }
 
-	[HttpPost]
-	public IActionResult Edit(Category category)
-	{
-		if (!ModelState.IsValid) return View();
+    [HttpPost]
+    public IActionResult Edit(Category category)
+    {
+        if (!ModelState.IsValid) return View();
+        _categoryService.Update(category);
+        TempData["success"] = "Category updated successfully";
+        return RedirectToAction("Index");
+    }
+    #endregion
 
-		_categoryRepository.Update(category);
-		_categoryRepository.SaveChanges();
-		TempData["success"] = "Category updated successfully";
-		return RedirectToAction("Index");
-	}
+    #region API
+    [HttpGet]
+    public IActionResult GetAll()
+    {
+        var categories = _categoryService.GetAll();
+        return Json(new { data = categories });
+    }
 
-	public IActionResult Delete(int? id)
-	{
-		if (id is null) return NotFound();
-
-		var category = _categoryRepository.GetFirstOrDefault(c => c.Id == id);
-		if (category is null) return NotFound();
-
-		return View(category);
-	}
-
-	[HttpPost, ActionName("Delete")]
-	public IActionResult DeleteCategory(int? id)
-	{
-
-		var category = _categoryRepository.GetFirstOrDefault(c => c.Id == id);
-		if (category is null) return NotFound();
-
-		_categoryRepository.Remove(category);
-		_categoryRepository.SaveChanges();
-		TempData["success"] = "Category deleted successfully";
-		return RedirectToAction("Index");
-	}
+    [HttpDelete]
+    public IActionResult Delete(int id)
+    {
+        _categoryService.Delete(id);
+        return Ok("Category deleted successfully");
+    }
+    #endregion
 }

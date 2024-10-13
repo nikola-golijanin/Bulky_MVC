@@ -5,11 +5,13 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BulkyWeb", "BulkyWeb\BulkyWeb.csproj", "{43C8C244-969D-4DB4-87A7-D45199A1CD92}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{34D3E9C6-7E48-42F0-AF32-0271C7B89C36}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{34D3E9C6-7E48-42F0-AF32-0271C7B89C36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{943FE726-907B-49D0-A2ED-22576C795531}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Domain\Domain.csproj", "{943FE726-907B-49D0-A2ED-22576C795531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utility", "Utility\Utility.csproj", "{E348C643-5E82-4D8F-8918-2AEFA5215263}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Utility", "Utility\Utility.csproj", "{E348C643-5E82-4D8F-8918-2AEFA5215263}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Service", "Service\Service.csproj", "{F40B8095-8122-405C-B676-DAE4A76B739C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{E348C643-5E82-4D8F-8918-2AEFA5215263}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E348C643-5E82-4D8F-8918-2AEFA5215263}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E348C643-5E82-4D8F-8918-2AEFA5215263}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F40B8095-8122-405C-B676-DAE4A76B739C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F40B8095-8122-405C-B676-DAE4A76B739C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F40B8095-8122-405C-B676-DAE4A76B739C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F40B8095-8122-405C-B676-DAE4A76B739C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
