@@ -1,11 +1,14 @@
 ﻿using BulkyWeb.ViewModels;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Categories;
+using Utility;
 
 namespace BulkyWeb.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Roles.Admin)]
 public class CategoryController : Controller
 {
     private readonly ICategoryService _categoryService;

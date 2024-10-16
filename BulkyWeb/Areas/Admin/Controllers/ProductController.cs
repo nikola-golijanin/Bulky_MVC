@@ -1,13 +1,16 @@
 ﻿using BulkyWeb.ViewModels;
 using Domain.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Service.Categories;
 using Service.Products;
+using Utility;
 
 namespace BulkyWeb.Areas.Admin.Controllers;
 
 [Area("Admin")]
+[Authorize(Roles = Roles.Admin)]
 public class ProductController : Controller
 {
     private readonly IProductService _productService;
