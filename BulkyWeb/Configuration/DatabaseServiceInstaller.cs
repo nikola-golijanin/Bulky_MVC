@@ -14,10 +14,11 @@ public class DatabaseServiceInstaller : IServiceInstaller
 			RegisterPostgresDatabase(services, configuration);
 	}
 
-	private static void RegisterPostgresDatabase(IServiceCollection services, IConfiguration configuration) => services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
+	private static void RegisterPostgresDatabase(IServiceCollection services, IConfiguration configuration) =>
+		services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("PostgresConnection")));
 
-	private static void RegisterInMemoryDatabase(IServiceCollection services)
-		=> services
+	private static void RegisterInMemoryDatabase(IServiceCollection services) =>
+		services
 			.AddDbContext<ApplicationDbContext>(options => options.UseInMemoryDatabase("InMemoryDb")
 			.LogTo(Console.WriteLine));
 }

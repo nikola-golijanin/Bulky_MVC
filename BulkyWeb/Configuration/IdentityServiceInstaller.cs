@@ -1,6 +1,6 @@
 ﻿
 using DataAccess.Data;
-using Microsoft.AspNetCore.Identity;
+using Domain.Models;
 
 namespace BulkyWeb.Configuration;
 
@@ -8,6 +8,8 @@ public class IdentityServiceInstaller : IServiceInstaller
 {
 	public void Install(IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddDefaultIdentity<IdentityUser>().AddEntityFrameworkStores<ApplicationDbContext>();
+		services
+			.AddDefaultIdentity<ApplicationUser>()
+			.AddEntityFrameworkStores<ApplicationDbContext>();
 	}
 }

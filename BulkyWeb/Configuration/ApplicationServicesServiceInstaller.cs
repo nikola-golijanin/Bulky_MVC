@@ -5,9 +5,8 @@ namespace BulkyWeb.Configuration;
 
 public class ApplicationServicesServiceInstaller : IServiceInstaller
 {
-	public void Install(IServiceCollection services, IConfiguration configuration)
-	{
-		services.AddScoped<ICategoryService, CategoryService>();
-		services.AddScoped<IProductService, ProductService>();
-	}
+	public void Install(IServiceCollection services, IConfiguration configuration) =>
+		services
+			.AddScoped<ICategoryService, CategoryService>()
+			.AddScoped<IProductService, ProductService>();
 }
