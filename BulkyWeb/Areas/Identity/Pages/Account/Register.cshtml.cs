@@ -102,6 +102,20 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
 
             [ValidateNever]
             public IEnumerable<SelectListItem> Roles { get; set; }
+
+            [Required]
+            public string Name { get; set; }
+
+            public string? StreetAddress { get; set; }
+
+            public string? City { get; set; }
+
+            public string? State { get; set; }
+
+            public string? ZipCode { get; set; }
+
+            public string? PhoneNumber { get; set; }
+
         }
 
 
@@ -189,7 +203,12 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             try
             {
                 var user = Activator.CreateInstance<ApplicationUser>();
-                user.Name = "Nikola";
+                user.Name = Input.Name;
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.State = Input.State;
+                user.ZipCode = Input.ZipCode;
+                user.PhoneNumber = Input.PhoneNumber;
                 return user;
             }
             catch
