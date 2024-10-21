@@ -3,6 +3,7 @@ using System;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021072718_AddCompanyToUser")]
+    partial class AddCompanyToUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,7 +197,7 @@ namespace DataAccess.Migrations
                         {
                             Id = 2,
                             City = "Izola",
-                            Name = "Company2",
+                            Name = "Company1",
                             PhoneNumber = "123123",
                             State = "Slovenija",
                             StreetAddress = "Addr 2",
@@ -204,7 +207,7 @@ namespace DataAccess.Migrations
                         {
                             Id = 3,
                             City = "Izola",
-                            Name = "Company3",
+                            Name = "Company1",
                             PhoneNumber = "123123",
                             State = "Slovenija",
                             StreetAddress = "Addr 3",

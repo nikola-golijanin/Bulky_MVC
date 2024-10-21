@@ -3,6 +3,7 @@ using System;
 using DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241021072228_CompanyTableSeed")]
+    partial class CompanyTableSeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +35,6 @@ namespace DataAccess.Migrations
 
                     b.Property<string>("City")
                         .HasColumnType("text");
-
-                    b.Property<int?>("CompanyId")
-                        .HasColumnType("integer");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -94,8 +94,6 @@ namespace DataAccess.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -194,7 +192,7 @@ namespace DataAccess.Migrations
                         {
                             Id = 2,
                             City = "Izola",
-                            Name = "Company2",
+                            Name = "Company1",
                             PhoneNumber = "123123",
                             State = "Slovenija",
                             StreetAddress = "Addr 2",
@@ -204,7 +202,7 @@ namespace DataAccess.Migrations
                         {
                             Id = 3,
                             City = "Izola",
-                            Name = "Company3",
+                            Name = "Company1",
                             PhoneNumber = "123123",
                             State = "Slovenija",
                             StreetAddress = "Addr 3",
@@ -478,15 +476,6 @@ namespace DataAccess.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
-                });
-
-            modelBuilder.Entity("Domain.Models.ApplicationUser", b =>
-                {
-                    b.HasOne("Domain.Models.Company", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId");
-
-                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("Domain.Models.Product", b =>

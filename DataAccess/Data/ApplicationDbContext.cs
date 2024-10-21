@@ -22,6 +22,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             new { Id = 3, Name = "History", DisplayOrder = 3 }
             );
 
+        modelBuilder.Entity<Company>().HasData(
+            new { Id = 1, Name = "Company1", StreetAddress = "Addr 1", City = "Izola", ZipCode = "6310", State = "Slovenija", PhoneNumber = "123123" },
+            new { Id = 2, Name = "Company2", StreetAddress = "Addr 2", City = "Izola", ZipCode = "6310", State = "Slovenija", PhoneNumber = "123123" },
+            new { Id = 3, Name = "Company3", StreetAddress = "Addr 3", City = "Izola", ZipCode = "6310", State = "Slovenija", PhoneNumber = "123123" }
+            );
+
         modelBuilder.Entity<Product>().HasData(
                 new Product
                 {

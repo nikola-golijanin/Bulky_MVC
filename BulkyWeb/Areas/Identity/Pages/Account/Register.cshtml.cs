@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
+using Service.Categories;
+using Service.Companies;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -27,6 +29,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ICompanyService _companyService;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -34,7 +37,8 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            RoleManager<IdentityRole> roleManager)
+            RoleManager<IdentityRole> roleManager,
+            ICompanyService companyService)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -43,6 +47,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             _logger = logger;
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _companyService = companyService;
         }
 
         /// <summary>
@@ -116,6 +121,11 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
 
             public string? PhoneNumber { get; set; }
 
+            [ValidateNever]
+            public IEnumerable<SelectListItem> Companies { get; set; }
+
+            public int? CompanyId { get; set; }
+
         }
 
 
@@ -126,9 +136,21 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             await CreateRolesAsync();
             Input = new()
             {
-                Roles = _roleManager.Roles.Select(r => new SelectListItem(r.Name, r.Name))
+                Roles = _roleManager.Roles.Select(r => new SelectListItem(r.Name, r.Name)),
+                Companies = _companyService.GetAllQueryable(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.Name
+                })
             };
         }
+
+        private static IEnumerable<SelectListItem> GetCategoryListSelectItems(ICategoryService _companyService)
+        => _companyService.GetAllQueryable(c => new SelectListItem
+        {
+            Value = c.Id.ToString(),
+            Text = c.Name
+        });
 
         private async Task CreateRolesAsync()
         {
@@ -209,6 +231,8 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                 user.State = Input.State;
                 user.ZipCode = Input.ZipCode;
                 user.PhoneNumber = Input.PhoneNumber;
+                if (string.Equals(Input.Role, Roles.Company, StringComparison.OrdinalIgnoreCase))
+                    user.CompanyId = Input.CompanyId;
                 return user;
             }
             catch

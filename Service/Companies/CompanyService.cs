@@ -1,5 +1,6 @@
 ﻿using DataAccess.Repository.Companies;
 using Domain.Models;
+using System.Linq.Expressions;
 
 namespace Service.Companies;
 public class CompanyService : ICompanyService
@@ -16,6 +17,7 @@ public class CompanyService : ICompanyService
         _companyRepository.Add(company);
         _companyRepository.SaveChanges();
     }
+    public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Company, T>> selector) => _companyRepository.GetAllQueryable(selector);
 
     public void Delete(int id)
     {
