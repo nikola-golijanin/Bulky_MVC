@@ -23,9 +23,9 @@ public class ProductController : Controller
     }
 
     #region Views
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var products = _productService.GetAll(including: nameof(Product.Category));
+        var products = await _productService.GetAllAsync(including: nameof(Product.Category));
         return View(products);
     }
 
@@ -54,11 +54,11 @@ public class ProductController : Controller
         return RedirectToAction("Index");
     }
 
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         //if (id is null) return NotFound();
 
-        var product = _productService.GetById(id);
+        var product = await _productService.GetByIdAsync(id);
 
         ViewBag.CategoryList = GetCategoryListSelectItems(_categoryService);
         return View(product);
@@ -73,7 +73,7 @@ public class ProductController : Controller
             return View();
         }
 
-        _productService.Update(product, imageFile);
+        _productService.UpdateAsync(product, imageFile);
 
         TempData["success"] = "Product updated successfully";
         return RedirectToAction("Index");
@@ -82,16 +82,16 @@ public class ProductController : Controller
 
     #region API
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var products = _productService.GetAll(including: nameof(Product.Category));
+        var products = await _productService.GetAllAsync(including: nameof(Product.Category));
         return Json(new { data = products });
     }
 
     [HttpDelete]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _productService.Delete(id);
+        await _productService.DeleteAsync(id);
         return Ok("Product deleted successfully");
     }
     #endregion

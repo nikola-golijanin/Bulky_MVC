@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Http;
 namespace Service.Products;
 public interface IProductService
 {
-    IEnumerable<Product> GetAll(params string[] including);
-    Product GetById(int id);
+    Task<IEnumerable<Product>> GetAllAsync(params string[] including);
+    Task<Product> GetByIdAsync(int id);
     void Create(Product product, IFormFile? imageFile);
-    void Update(Product product, IFormFile? imageFile);
-    void Delete(int id);
+    Task UpdateAsync(Product product, IFormFile? imageFile);
+    Task DeleteAsync(int id);
 }

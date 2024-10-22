@@ -17,15 +17,15 @@ public class HomeController : Controller
         _productRepository = productRepository;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var products = _productRepository.GetAll(including: nameof(Product.Category));
+        var products = await _productRepository.GetAllAsync(including: nameof(Product.Category));
         return View(products);
     }
 
-    public IActionResult Details(int productId)
+    public async Task<IActionResult> Details(int productId)
     {
-        var product = _productRepository.GetFirstOrDefault(p => p.Id == productId, including: nameof(Product.Category));
+        var product = await _productRepository.GetFirstOrDefaultAsync(p => p.Id == productId, including: nameof(Product.Category));
         return View(product);
     }
 

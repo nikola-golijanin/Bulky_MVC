@@ -4,10 +4,10 @@ using System.Linq.Expressions;
 namespace Service.Categories;
 public interface ICategoryService
 {
-    IEnumerable<Category> GetAll();
-    public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Category, T>> selector);
-    Category GetById(int id);
+    Task<IEnumerable<Category>> GetAllAsync();
+    IEnumerable<T> GetAllQueryable<T>(Expression<Func<Category, T>> selector);
+    Task<Category> GetByIdAsync(int id);
     void Create(Category category);
-    void Update(Category category);
-    void Delete(int id);
+    Task UpdateAsync(Category category);
+    Task DeleteAsync(int id);
 }

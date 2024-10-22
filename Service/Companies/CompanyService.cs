@@ -15,30 +15,30 @@ public class CompanyService : ICompanyService
     public void Create(Company company)
     {
         _companyRepository.Add(company);
-        _companyRepository.SaveChanges();
+        _companyRepository.SaveChangesAsync();
     }
     public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Company, T>> selector) => _companyRepository.GetAllQueryable(selector);
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var company = _companyRepository.GetFirstOrDefault(c => c.Id == id);
+        var company = await _companyRepository.GetFirstOrDefaultAsync(c => c.Id == id);
         ArgumentNullException.ThrowIfNull(company, nameof(company));
         _companyRepository.Remove(company);
-        _companyRepository.SaveChanges();
+        await _companyRepository.SaveChangesAsync();
     }
 
-    public IEnumerable<Company> GetAll() => _companyRepository.GetAll();
+    public Task<IEnumerable<Company>> GetAllAsync() => _companyRepository.GetAllAsync();
 
-    public Company GetById(int id)
+    public async Task<Company> GetByIdAsync(int id)
     {
-        var company = _companyRepository.GetFirstOrDefault(c => c.Id == id);
+        var company = await _companyRepository.GetFirstOrDefaultAsync(c => c.Id == id);
         ArgumentNullException.ThrowIfNull(company, nameof(company));
         return company;
     }
 
-    public void Update(Company company)
+    public async Task UpdateAsync(Company company)
     {
         _companyRepository.Update(company);
-        _companyRepository.SaveChanges();
+        await _companyRepository.SaveChangesAsync();
     }
 }

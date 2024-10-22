@@ -33,31 +33,31 @@ public class ProductService : IProductService
         product.ImageUrl = @"\images\product\" + filename;
 
         _productRepository.Add(product);
-        _productRepository.SaveChanges();
+        _productRepository.SaveChangesAsync();
     }
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var product = _productRepository.GetFirstOrDefault(p => p.Id == id);
+        var product = await _productRepository.GetFirstOrDefaultAsync(p => p.Id == id);
         ArgumentNullException.ThrowIfNull(product, nameof(product));
 
         var imagePath = _hostingEnvironment.WebRootPath + product.ImageUrl;
         DeleteProductImage(imagePath);
 
         _productRepository.Remove(product);
-        _productRepository.SaveChanges();
+        await _productRepository.SaveChangesAsync();
     }
 
-    public IEnumerable<Product> GetAll(params string[] including) => _productRepository.GetAll(including);
+    public Task<IEnumerable<Product>> GetAllAsync(params string[] including) => _productRepository.GetAllAsync(including);
 
-    public Product GetById(int id)
+    public async Task<Product> GetByIdAsync(int id)
     {
-        var product = _productRepository.GetFirstOrDefault(c => c.Id == id);
+        var product = await _productRepository.GetFirstOrDefaultAsync(c => c.Id == id);
         ArgumentNullException.ThrowIfNull(product, nameof(product));
         return product;
     }
 
-    public void Update(Product product, IFormFile? imageFile)
+    public async Task UpdateAsync(Product product, IFormFile? imageFile)
     {
         if (imageFile is not null)
         {
@@ -78,7 +78,7 @@ public class ProductService : IProductService
             product.ImageUrl = @"\images\product\" + filename;
         }
         _productRepository.Update(product);
-        _productRepository.SaveChanges();
+        await _productRepository.SaveChangesAsync();
     }
 
     private static void DeleteProductImage(string imagePath)

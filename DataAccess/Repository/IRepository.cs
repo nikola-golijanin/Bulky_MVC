@@ -4,10 +4,10 @@ namespace DataAccess.Repository;
 
 public interface IRepository<T> where T : class
 {
-	IEnumerable<T> GetAll(params string[] including);
-	T? GetFirstOrDefault(Expression<Func<T, bool>> predicate, params string[] including);
-	void Add(T entity);
-	void Remove(T entity);
-	void RemoveRange(IEnumerable<T> entities);
-	void SaveChanges();
+    Task<IEnumerable<T>> GetAllAsync(params string[] including);
+    Task<T?> GetFirstOrDefaultAsync(Expression<Func<T, bool>> predicate, params string[] including);
+    void Add(T entity);
+    void Remove(T entity);
+    void RemoveRange(IEnumerable<T> entities);
+    Task SaveChangesAsync();
 }

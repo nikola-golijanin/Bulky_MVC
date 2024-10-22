@@ -15,31 +15,31 @@ public class CategoryService : ICategoryService
     public void Create(Category category)
     {
         _categoryRepository.Add(category);
-        _categoryRepository.SaveChanges();
+        _categoryRepository.SaveChangesAsync();
     }
 
     public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Category, T>> selector) => _categoryRepository.GetAllQueryable(selector);
 
-    public void Delete(int id)
+    public async Task DeleteAsync(int id)
     {
-        var category = _categoryRepository.GetFirstOrDefault(c => c.Id == id);
+        var category = await _categoryRepository.GetFirstOrDefaultAsync(c => c.Id == id);
         ArgumentNullException.ThrowIfNull(category, nameof(category));
         _categoryRepository.Remove(category);
-        _categoryRepository.SaveChanges();
+        await _categoryRepository.SaveChangesAsync();
     }
 
-    public IEnumerable<Category> GetAll() => _categoryRepository.GetAll();
+    public Task<IEnumerable<Category>> GetAllAsync() => _categoryRepository.GetAllAsync();
 
-    public Category GetById(int id)
+    public async Task<Category> GetByIdAsync(int id)
     {
-        var category = _categoryRepository.GetFirstOrDefault(c => c.Id == id);
+        var category = await _categoryRepository.GetFirstOrDefaultAsync(c => c.Id == id);
         ArgumentNullException.ThrowIfNull(category, nameof(category));
         return category;
     }
 
-    public void Update(Category category)
+    public async Task UpdateAsync(Category category)
     {
         _categoryRepository.Update(category);
-        _categoryRepository.SaveChanges();
+        await _categoryRepository.SaveChangesAsync();
     }
 }

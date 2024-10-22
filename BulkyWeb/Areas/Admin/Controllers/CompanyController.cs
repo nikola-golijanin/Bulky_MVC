@@ -19,9 +19,9 @@ public class CompanyController : Controller
     }
 
     #region Views
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var companies = _companyService.GetAll();
+        var companies = await _companyService.GetAllAsync();
         return View(companies);
     }
 
@@ -38,22 +38,21 @@ public class CompanyController : Controller
         return RedirectToAction("Index");
     }
 
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         //if (id is null) return NotFound();
 
-        var company = _companyService.GetById(id);
-
+        var company = await _companyService.GetByIdAsync(id);
         return View(company);
     }
 
     [HttpPost]
-    public IActionResult Edit(Company company)
+    public async Task<IActionResult> Edit(Company company)
     {
         if (!ModelState.IsValid)
             return View();
 
-        _companyService.Update(company);
+        await _companyService.UpdateAsync(company);
 
         TempData["success"] = "Company updated successfully";
         return RedirectToAction("Index");
@@ -62,16 +61,16 @@ public class CompanyController : Controller
 
     #region API
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var companies = _companyService.GetAll();
+        var companies = await _companyService.GetAllAsync();
         return Json(new { data = companies });
     }
 
     [HttpDelete]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _companyService.Delete(id);
+        await _companyService.DeleteAsync(id);
         return Ok("Company deleted successfully");
     }
     #endregion

@@ -19,9 +19,9 @@ public class CategoryController : Controller
     }
 
     #region Views
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
-        var categories = _categoryService.GetAll();
+        var categories = await _categoryService.GetAllAsync();
         return View(categories);
     }
 
@@ -41,21 +41,21 @@ public class CategoryController : Controller
         return RedirectToAction("Index");
     }
 
-    public IActionResult Edit(int id)
+    public async Task<IActionResult> Edit(int id)
     {
         //if (id is null) return NotFound();
 
-        var category = _categoryService.GetById(id);
+        var category = await _categoryService.GetByIdAsync(id);
         if (category is null) return NotFound();
 
         return View(category);
     }
 
     [HttpPost]
-    public IActionResult Edit(Category category)
+    public async Task<IActionResult> Edit(Category category)
     {
         if (!ModelState.IsValid) return View();
-        _categoryService.Update(category);
+        await _categoryService.UpdateAsync(category);
         TempData["success"] = "Category updated successfully";
         return RedirectToAction("Index");
     }
@@ -63,16 +63,16 @@ public class CategoryController : Controller
 
     #region API
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-        var categories = _categoryService.GetAll();
+        var categories = await _categoryService.GetAllAsync();
         return Json(new { data = categories });
     }
 
     [HttpDelete]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        _categoryService.Delete(id);
+        await _categoryService.DeleteAsync(id);
         return Ok("Category deleted successfully");
     }
     #endregion
