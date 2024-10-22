@@ -50,7 +50,7 @@ public class CompanyServiceTests
     {
         // Arrange
         var companyId = 1;
-        _companyRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Company, bool>>>())).ReturnsAsync((Company)null);
+        _companyRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Company, bool>>>())).ReturnsAsync((Company?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _companyService.DeleteAsync(companyId));
@@ -90,7 +90,7 @@ public class CompanyServiceTests
     {
         // Arrange
         var companyId = 1;
-        _companyRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Company, bool>>>())).ReturnsAsync((Company)null);
+        _companyRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Company, bool>>>())).ReturnsAsync((Company?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _companyService.GetByIdAsync(companyId));

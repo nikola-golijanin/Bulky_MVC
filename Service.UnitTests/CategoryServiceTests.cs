@@ -53,7 +53,7 @@ public class CategoryServiceTests
     {
         // Arrange
         var categoryId = 1;
-        _categoryRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>())).ReturnsAsync((Category)null);
+        _categoryRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>())).ReturnsAsync((Category?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _categoryService.DeleteAsync(categoryId));
@@ -93,7 +93,7 @@ public class CategoryServiceTests
     {
         // Arrange
         var categoryId = 1;
-        _categoryRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>())).ReturnsAsync((Category)null);
+        _categoryRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Category, bool>>>())).ReturnsAsync((Category?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _categoryService.GetByIdAsync(categoryId));

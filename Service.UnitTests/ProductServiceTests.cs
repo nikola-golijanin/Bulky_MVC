@@ -67,7 +67,7 @@ public class ProductServiceTests
     {
         // Arrange
         var productId = 1;
-        _productRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync((Product)null);
+        _productRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync((Product?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _productService.DeleteAsync(productId));
@@ -107,7 +107,7 @@ public class ProductServiceTests
     {
         // Arrange
         var productId = 1;
-        _productRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync((Product)null);
+        _productRepositoryMock.Setup(repo => repo.GetFirstOrDefaultAsync(It.IsAny<Expression<Func<Product, bool>>>())).ReturnsAsync((Product?)null);
 
         // Act & Assert
         await Assert.ThrowsAsync<ArgumentNullException>(() => _productService.GetByIdAsync(productId));
