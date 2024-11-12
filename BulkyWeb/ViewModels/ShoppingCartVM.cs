@@ -4,6 +4,6 @@ namespace BulkyWeb.ViewModels;
 
 public class ShoppingCartVM
 {
-    public IEnumerable<ShoppingCart> ListCart { get; set; }
+    public IEnumerable<ShoppingCart> CartList { get; set; }
     public double OrderTotal { get; set; }
 }

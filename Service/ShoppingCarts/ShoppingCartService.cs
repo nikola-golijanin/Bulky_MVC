@@ -17,6 +17,11 @@ public class ShoppingCartService : IShoppingCartService
         await _shoppingCartRepository.SaveChangesAsync();
     }
 
+    public Task<IEnumerable<ShoppingCart>> GetAllShoppingCartsForUser(string userId) =>
+        _shoppingCartRepository.GetAllAsync(
+            sc => sc.ApplicationUserId == userId,
+            including: nameof(ShoppingCart.Product));
+
     public Task<ShoppingCart?> GetShoppingCartForUserAsync(string userId, int productId) =>
         _shoppingCartRepository.GetFirstOrDefaultAsync(
             sc => sc.ApplicationUserId == userId &&
