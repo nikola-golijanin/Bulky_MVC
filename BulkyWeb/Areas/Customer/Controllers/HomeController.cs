@@ -1,8 +1,8 @@
 using DataAccess.Repository.Products;
-using DataAccess.Repository.ShoppingCarts;
 using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Service.ShoppingCarts;
 using System.Diagnostics;
 using System.Security.Claims;
 
@@ -13,18 +13,16 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly IProductRepository _productRepository;
-
-    // TODO Add IShoppingService
-    private readonly IShoppingCartRepository _shoppingCartRepository;
+    private readonly IShoppingCartService _shoppingCartService;
 
     public HomeController(
         ILogger<HomeController> logger,
         IProductRepository productRepository,
-        IShoppingCartRepository shoppingCartRepository)
+        IShoppingCartService shoppingCartService)
     {
         _logger = logger;
         _productRepository = productRepository;
-        _shoppingCartRepository = shoppingCartRepository;
+        _shoppingCartService = shoppingCartService;
     }
 
     public async Task<IActionResult> Index()
@@ -55,22 +53,18 @@ public class HomeController : Controller
         ArgumentNullException.ThrowIfNull(userId, nameof(userId));
         shoppingCart.ApplicationUserId = userId;
 
-        var cartFromDb = await _shoppingCartRepository.GetFirstOrDefaultAsync(
-            sc => sc.ApplicationUserId == userId &&
-            sc.ProductId == shoppingCart.ProductId);
+        var cartFromDb = await _shoppingCartService.GetShoppingCartForUserAsync(userId, shoppingCart.ProductId);
 
         if (cartFromDb is not null)
         {
-            cartFromDb.Count += shoppingCart.Count;
-            _shoppingCartRepository.Update(cartFromDb);
+            await _shoppingCartService.UpdateShoppingCart(cartFromDb, shoppingCart);
         }
         else
         {
-            _shoppingCartRepository.Add(shoppingCart);
+            await _shoppingCartService.CreateNewShoppingCart(shoppingCart);
         }
 
         TempData["success"] = "Cart updated successfully";
-        await _shoppingCartRepository.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
 

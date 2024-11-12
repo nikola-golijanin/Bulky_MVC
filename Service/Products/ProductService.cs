@@ -48,7 +48,7 @@ public class ProductService : IProductService
         await _productRepository.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<Product>> GetAllAsync(params string[] including) => _productRepository.GetAllAsync(including);
+    public Task<IEnumerable<Product>> GetAllProductsIncludingCategories() => _productRepository.GetAllAsync(including: nameof(Product.Category));
 
     public async Task<Product> GetByIdAsync(int id)
     {
@@ -86,4 +86,6 @@ public class ProductService : IProductService
         if (File.Exists(imagePath))
             File.Delete(imagePath);
     }
+
+
 }

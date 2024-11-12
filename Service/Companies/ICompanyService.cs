@@ -5,9 +5,14 @@ namespace Service.Companies;
 public interface ICompanyService
 {
     Task<IEnumerable<Company>> GetAllAsync();
+
     IEnumerable<T> GetAllQueryable<T>(Expression<Func<Company, T>> selector);
+
     Task<Company> GetByIdAsync(int id);
-    void Create(Company company);
+
+    Task Create(Company company);
+
     Task UpdateAsync(Company company);
+
     Task DeleteAsync(int id);
 }

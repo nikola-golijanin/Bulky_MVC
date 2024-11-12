@@ -12,10 +12,10 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public void Create(Category category)
+    public async Task Create(Category category)
     {
         _categoryRepository.Add(category);
-        _categoryRepository.SaveChangesAsync();
+        await _categoryRepository.SaveChangesAsync();
     }
 
     public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Category, T>> selector) => _categoryRepository.GetAllQueryable(selector);

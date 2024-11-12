@@ -12,10 +12,10 @@ public class CompanyService : ICompanyService
         _companyRepository = companyRepository;
     }
 
-    public void Create(Company company)
+    public async Task Create(Company company)
     {
         _companyRepository.Add(company);
-        _companyRepository.SaveChangesAsync();
+        await _companyRepository.SaveChangesAsync();
     }
     public IEnumerable<T> GetAllQueryable<T>(Expression<Func<Company, T>> selector) => _companyRepository.GetAllQueryable(selector);
 

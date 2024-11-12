@@ -28,12 +28,12 @@ public class CompanyController : Controller
     public IActionResult Create() => View(new Company());
 
     [HttpPost]
-    public IActionResult Create(Company company)
+    public async Task<IActionResult> Create(Company company)
     {
         if (!ModelState.IsValid)
             return View(company);
 
-        _companyService.Create(company);
+        await _companyService.Create(company);
         TempData["success"] = "Company created successfully";
         return RedirectToAction("Index");
     }

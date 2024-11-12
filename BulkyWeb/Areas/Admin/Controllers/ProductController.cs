@@ -27,7 +27,7 @@ public class ProductController : Controller
     #region Views
     public async Task<IActionResult> Index()
     {
-        var products = await _productService.GetAllAsync(including: nameof(Product.Category));
+        var products = await _productService.GetAllProductsIncludingCategories();
         return View(products);
     }
 
@@ -86,7 +86,7 @@ public class ProductController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var products = await _productService.GetAllAsync(including: nameof(Product.Category));
+        var products = await _productService.GetAllProductsIncludingCategories();
         return Json(new { data = products });
     }
 
