@@ -17,7 +17,10 @@ public class HomeController : Controller
     // TODO Add IShoppingService
     private readonly IShoppingCartRepository _shoppingCartRepository;
 
-    public HomeController(ILogger<HomeController> logger, IProductRepository productRepository, IShoppingCartRepository shoppingCartRepository)
+    public HomeController(
+        ILogger<HomeController> logger,
+        IProductRepository productRepository,
+        IShoppingCartRepository shoppingCartRepository)
     {
         _logger = logger;
         _productRepository = productRepository;
@@ -52,8 +55,9 @@ public class HomeController : Controller
         ArgumentNullException.ThrowIfNull(userId, nameof(userId));
         shoppingCart.ApplicationUserId = userId;
 
-        var cartFromDb = await _shoppingCartRepository.GetFirstOrDefaultAsync(sc => sc.ApplicationUserId == userId &&
-                                                                                sc.ProductId == shoppingCart.ProductId);
+        var cartFromDb = await _shoppingCartRepository.GetFirstOrDefaultAsync(
+            sc => sc.ApplicationUserId == userId &&
+            sc.ProductId == shoppingCart.ProductId);
 
         if (cartFromDb is not null)
         {
@@ -61,9 +65,11 @@ public class HomeController : Controller
             _shoppingCartRepository.Update(cartFromDb);
         }
         else
+        {
             _shoppingCartRepository.Add(shoppingCart);
+        }
 
-
+        TempData["success"] = "Cart updated successfully";
         await _shoppingCartRepository.SaveChangesAsync();
         return RedirectToAction(nameof(Index));
     }
