@@ -10,5 +10,11 @@ public class ShoppingCartRepository : Repository<ShoppingCart>, IShoppingCartRep
         _context = context;
     }
 
+    public int GetCartTotalItemCount(string userId) =>
+        _context.ShoppingCarts
+            .Where(cart => cart.ApplicationUserId == userId)
+            .Select(sc => sc.Count)
+            .Sum();
+
     public void Update(ShoppingCart cart) => _context.ShoppingCarts.Update(cart);
 }

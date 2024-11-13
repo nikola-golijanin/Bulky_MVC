@@ -24,10 +24,37 @@ public class CartController : Controller
         var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         ArgumentNullException.ThrowIfNull(userId, nameof(userId));
 
+
+        var cartList = await _shoppingCartService.GetAllShoppingCartsForUserAsync(userId);
+        var totalOrderPirce = _shoppingCartService.CalculateTotalOrderPrice(cartList);
+
         ShoppingCartVM = new ShoppingCartVM
         {
-            CartList = await _shoppingCartService.GetAllShoppingCartsForUser(userId),
+            CartList = cartList,
+            OrderTotal = totalOrderPirce
         };
+
         return View(ShoppingCartVM);
     }
+
+    public IActionResult Summary() => View();
+
+    public async Task<IActionResult> Plus(int cartId)
+    {
+        await _shoppingCartService.IncrementProductCountAsync(cartId);
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Minus(int cartId)
+    {
+        await _shoppingCartService.DecrementProductCount(cartId);
+        return RedirectToAction(nameof(Index));
+    }
+
+    public async Task<IActionResult> Remove(int cartId)
+    {
+        await _shoppingCartService.RemoveShoppingCartAsync(cartId);
+        return RedirectToAction(nameof(Index));
+    }
+
 }
