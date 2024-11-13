@@ -28,7 +28,7 @@ public class CategoryController : Controller
     public IActionResult Create() => View(new CategoryVM());
 
     [HttpPost]
-    public IActionResult Create(CategoryVM categoryVm)
+    public async Task<IActionResult> Create(CategoryVM categoryVm)
     {
         if (string.Equals(categoryVm.Name, categoryVm.DisplayOrder.ToString(), StringComparison.OrdinalIgnoreCase))
             ModelState.AddModelError("Name", "Display order cannot match the Name");
@@ -36,7 +36,7 @@ public class CategoryController : Controller
         if (!ModelState.IsValid) return View(new CategoryVM());
 
         var category = (Category)categoryVm;
-        _categoryService.Create(category);
+        await _categoryService.Create(category);
         TempData["success"] = "Category created successfully";
         return RedirectToAction("Index");
     }
