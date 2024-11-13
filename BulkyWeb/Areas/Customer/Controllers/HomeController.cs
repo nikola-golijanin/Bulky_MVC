@@ -35,6 +35,7 @@ public class HomeController : Controller
     {
 
         var product = await _productRepository.GetFirstOrDefaultAsync(p => p.Id == productId, including: nameof(Product.Category));
+        ArgumentNullException.ThrowIfNull(product, nameof(product));
 
         var shoppingCart = new ShoppingCart
         {

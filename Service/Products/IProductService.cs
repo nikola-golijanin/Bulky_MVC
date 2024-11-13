@@ -8,7 +8,7 @@ public interface IProductService
 
     Task<Product> GetByIdAsync(int id);
 
-    void Create(Product product, IFormFile? imageFile);
+    Task CreateAsync(Product product, IFormFile? imageFile);
 
     Task UpdateAsync(Product product, IFormFile? imageFile);
 

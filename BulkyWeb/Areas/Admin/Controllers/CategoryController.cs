@@ -36,7 +36,7 @@ public class CategoryController : Controller
         if (!ModelState.IsValid) return View(new CategoryVM());
 
         var category = (Category)categoryVm;
-        await _categoryService.Create(category);
+        await _categoryService.CreateAsync(category);
         TempData["success"] = "Category created successfully";
         return RedirectToAction("Index");
     }

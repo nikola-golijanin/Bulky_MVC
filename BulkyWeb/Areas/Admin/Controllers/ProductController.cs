@@ -42,7 +42,7 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create(ProductVM productVm, IFormFile? imageFile)
+    public async Task<IActionResult> Create(ProductVM productVm, IFormFile? imageFile)
     {
         if (!ModelState.IsValid)
         {
@@ -51,7 +51,7 @@ public class ProductController : Controller
             return View(productVm);
         }
 
-        _productService.Create((Product)productVm, imageFile);
+        await _productService.CreateAsync((Product)productVm, imageFile);
         TempData["success"] = "Product created successfully";
         return RedirectToAction("Index");
     }
@@ -67,7 +67,7 @@ public class ProductController : Controller
     }
 
     [HttpPost]
-    public IActionResult Edit(Product product, IFormFile? imageFile)
+    public async Task<IActionResult> Edit(Product product, IFormFile? imageFile)
     {
         if (!ModelState.IsValid)
         {
@@ -75,7 +75,7 @@ public class ProductController : Controller
             return View();
         }
 
-        _productService.UpdateAsync(product, imageFile);
+        await _productService.UpdateAsync(product, imageFile);
 
         TempData["success"] = "Product updated successfully";
         return RedirectToAction("Index");

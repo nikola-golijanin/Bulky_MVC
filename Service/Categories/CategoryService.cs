@@ -12,7 +12,7 @@ public class CategoryService : ICategoryService
         _categoryRepository = categoryRepository;
     }
 
-    public async Task Create(Category category)
+    public async Task CreateAsync(Category category)
     {
         _categoryRepository.Add(category);
         await _categoryRepository.SaveChangesAsync();

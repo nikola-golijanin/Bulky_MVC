@@ -1,5 +1,4 @@
-﻿using DataAccess.Repository.Categories;
-using DataAccess.Repository.Products;
+﻿using DataAccess.Repository.Products;
 using Domain.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -8,17 +7,17 @@ namespace Service.Products;
 public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
-    private readonly ICategoryRepository _categoryRepository;
     private readonly IWebHostEnvironment _hostingEnvironment;
 
-    public ProductService(IProductRepository productRepository, ICategoryRepository categoryRepository, IWebHostEnvironment hostingEnvironment)
+    public ProductService(
+        IProductRepository productRepository,
+        IWebHostEnvironment hostingEnvironment)
     {
         _productRepository = productRepository;
-        _categoryRepository = categoryRepository;
         _hostingEnvironment = hostingEnvironment;
     }
 
-    public void Create(Product product, IFormFile? imageFile)
+    public async Task CreateAsync(Product product, IFormFile? imageFile)
     {
         ArgumentNullException.ThrowIfNull(imageFile, nameof(imageFile));
 
@@ -33,7 +32,7 @@ public class ProductService : IProductService
         product.ImageUrl = @"\images\product\" + filename;
 
         _productRepository.Add(product);
-        _productRepository.SaveChangesAsync();
+        await _productRepository.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
