@@ -1,5 +1,7 @@
 ﻿using BulkyWeb.ViewModels;
+using Domain.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Service.ShoppingCarts;
 using System.Security.Claims;
@@ -11,12 +13,15 @@ namespace BulkyWeb.Areas.Customer.Controllers;
 public class CartController : Controller
 {
     private readonly IShoppingCartService _shoppingCartService;
+    private readonly UserManager<ApplicationUser> _userManager;
+
 
     public ShoppingCartVM ShoppingCartVM { get; set; }
 
-    public CartController(IShoppingCartService shoppingCartService)
+    public CartController(IShoppingCartService shoppingCartService, UserManager<ApplicationUser> userManager)
     {
         _shoppingCartService = shoppingCartService;
+        _userManager = userManager;
     }
 
     public async Task<IActionResult> Index()
@@ -31,13 +36,47 @@ public class CartController : Controller
         ShoppingCartVM = new ShoppingCartVM
         {
             CartList = cartList,
-            OrderTotal = totalOrderPirce
+            OrderHeader = new OrderHeader
+            {
+                OrderTotal = totalOrderPirce
+            }
         };
 
         return View(ShoppingCartVM);
     }
 
-    public IActionResult Summary() => View();
+    public async Task<IActionResult> Summary()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ArgumentNullException.ThrowIfNull(userId, nameof(userId));
+
+        var applicationUser = await _userManager.FindByIdAsync(userId);
+        ArgumentNullException.ThrowIfNull(applicationUser, nameof(applicationUser));
+
+        var cartList = await _shoppingCartService.GetAllShoppingCartsForUserAsync(userId);
+        var totalOrderPirce = _shoppingCartService.CalculateTotalOrderPrice(cartList);
+
+        ShoppingCartVM = new ShoppingCartVM
+        {
+            CartList = cartList,
+            OrderHeader = PopulateOrderHeaderFromUserData(applicationUser),
+        };
+
+        ShoppingCartVM.OrderHeader.OrderTotal = totalOrderPirce;
+
+        return View(ShoppingCartVM);
+
+        static OrderHeader PopulateOrderHeaderFromUserData(ApplicationUser user) => new()
+        {
+            ApplicationUser = user,
+            Name = user.Name,
+            PhoneNumber = user.PhoneNumber,
+            StreetAddress = user.StreetAddress,
+            City = user.City,
+            State = user.State,
+            ZipCode = user.ZipCode
+        };
+    }
 
     public async Task<IActionResult> Plus(int cartId)
     {

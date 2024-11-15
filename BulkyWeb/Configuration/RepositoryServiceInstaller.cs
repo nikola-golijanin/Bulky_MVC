@@ -1,5 +1,6 @@
 ﻿using DataAccess.Repository.Categories;
 using DataAccess.Repository.Companies;
+using DataAccess.Repository.Orders;
 using DataAccess.Repository.Products;
 using DataAccess.Repository.ShoppingCarts;
 
@@ -12,5 +13,7 @@ public class RepositoryServiceInstaller : IServiceInstaller
             .AddScoped<ICategoryRepository, CategoryRepository>()
             .AddScoped<IProductRepository, ProductRepository>()
             .AddScoped<ICompanyRepository, CompanyRepository>()
-            .AddScoped<IShoppingCartRepository, ShoppingCartRepository>();
+            .AddScoped<IShoppingCartRepository, ShoppingCartRepository>()
+            .AddScoped<IOrderDetailRepository, OrderDetailRepository>()
+            .AddScoped<IOrderHeaderRepository, OrderHeaderRepository>();
 }

@@ -2,6 +2,7 @@
 using Service;
 using Service.Categories;
 using Service.Companies;
+using Service.Orders;
 using Service.Products;
 using Service.ShoppingCarts;
 
@@ -15,5 +16,7 @@ public class ApplicationServicesServiceInstaller : IServiceInstaller
             .AddScoped<IProductService, ProductService>()
             .AddScoped<IEmailSender, EmailSenderService>()
             .AddScoped<ICompanyService, CompanyService>()
-            .AddScoped<IShoppingCartService, ShoppingCartService>();
+            .AddScoped<IShoppingCartService, ShoppingCartService>()
+            .AddScoped<IOrderDetailService, OrderDetailService>()
+            .AddScoped<IOrderHeaderService, OrderHeaderService>();
 }
