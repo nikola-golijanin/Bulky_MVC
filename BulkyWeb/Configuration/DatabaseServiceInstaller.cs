@@ -8,7 +8,6 @@ public class DatabaseServiceInstaller : IServiceInstaller
 {
     public void Install(IServiceCollection services, IConfiguration configuration)
     {
-        // var useOnlyInMemoryDatabase = configuration["UseOnlyInMemoryDatabase"];
         var useOnlyInMemoryDatabase = configuration.GetValue<bool>("UseOnlyInMemoryDatabase");
 
         if (useOnlyInMemoryDatabase)
