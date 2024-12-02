@@ -1,4 +1,6 @@
-﻿using DataAccess.Repository.ShoppingCarts;
+﻿using DataAccess.Data;
+using DataAccess.Repository.ShoppingCarts;
+using Domain.Enums;
 using Domain.Models;
 using System.Security.Claims;
 
@@ -6,10 +8,14 @@ namespace Service.ShoppingCarts;
 public class ShoppingCartService : IShoppingCartService
 {
     private readonly IShoppingCartRepository _shoppingCartRepository;
+    private readonly ApplicationDbContext _context;
 
-    public ShoppingCartService(IShoppingCartRepository shoppingCartRepository)
+    public ShoppingCartService(
+        IShoppingCartRepository shoppingCartRepository,
+        ApplicationDbContext context)
     {
         _shoppingCartRepository = shoppingCartRepository;
+        _context = context;
     }
 
     public Task<ShoppingCart?> GetShoppingCartForUserAsync(string userId, int productId) =>
@@ -105,5 +111,45 @@ public class ShoppingCartService : IShoppingCartService
         if (userId is null) return 0;
 
         return _shoppingCartRepository.GetCartTotalItemCount(userId);
+    }
+
+    public async Task CreateOrderHeader(OrderHeader orderHeader, ApplicationUser user, double totalPrice)
+    {
+        orderHeader.ApplicationUser = user;
+        orderHeader.OrderTotal = totalPrice;
+        if (IsUserCompanyUser(user))
+        {
+            orderHeader.PaymentStatus = nameof(PaymentStatus.DelayedPayment);
+            orderHeader.OrderStatus = nameof(OrderStatus.Approved);
+        }
+        else
+        {
+            orderHeader.PaymentStatus = nameof(PaymentStatus.Pending);
+            orderHeader.OrderStatus = nameof(OrderStatus.Pending);
+        }
+
+        _context.OrderHeaders.Add(orderHeader);
+        await _context.SaveChangesAsync();
+
+        static bool IsUserCompanyUser(ApplicationUser user) => user.CompanyId.GetValueOrDefault() == 0;
+    }
+
+    public async Task CreateOrderDetails(IEnumerable<ShoppingCart> cartList, OrderHeader orderHeader)
+    {
+        List<Task> orderDetailsTasks = [];
+        foreach (var cart in cartList)
+        {
+            var orderDetail = new OrderDetail
+            {
+                ProductId = cart.ProductId,
+                OrderHeaderId = orderHeader.Id,
+                Price = cart.Price,
+                Count = cart.Count
+            };
+            _context.OrderDetails.Add(orderDetail);
+            orderDetailsTasks.Add(_context.SaveChangesAsync());
+        };
+
+        await Task.WhenAll(orderDetailsTasks);
     }
 }

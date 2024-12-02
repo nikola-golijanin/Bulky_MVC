@@ -33,7 +33,6 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Details(int productId)
     {
-
         var product = await _productRepository.GetFirstOrDefaultAsync(p => p.Id == productId, including: nameof(Product.Category));
         ArgumentNullException.ThrowIfNull(product, nameof(product));
 

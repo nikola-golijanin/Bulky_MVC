@@ -21,4 +21,8 @@ public interface IShoppingCartService
     Task RemoveShoppingCartAsync(int cartId);
 
     int GetCartTotalItemCount(ClaimsPrincipal user);
+
+    Task CreateOrderHeader(OrderHeader orderHeader, ApplicationUser user, double totalPrice);
+
+    Task CreateOrderDetails(IEnumerable<ShoppingCart> cartList, OrderHeader orderHeader);
 }

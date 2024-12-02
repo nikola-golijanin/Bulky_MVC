@@ -15,10 +15,12 @@ public class CartController : Controller
     private readonly IShoppingCartService _shoppingCartService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-
+    [BindProperty]
     public ShoppingCartVM ShoppingCartVM { get; set; }
 
-    public CartController(IShoppingCartService shoppingCartService, UserManager<ApplicationUser> userManager)
+    public CartController(
+        IShoppingCartService shoppingCartService,
+        UserManager<ApplicationUser> userManager)
     {
         _shoppingCartService = shoppingCartService;
         _userManager = userManager;
@@ -78,6 +80,34 @@ public class CartController : Controller
         };
     }
 
+    [HttpPost]
+    [ActionName(nameof(Summary))]
+    public async Task<IActionResult> SummarySubmit()
+    {
+        var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ArgumentNullException.ThrowIfNull(userId, nameof(userId));
+
+        var applicationUser = await _userManager.FindByIdAsync(userId);
+        ArgumentNullException.ThrowIfNull(applicationUser, nameof(applicationUser));
+
+        var cartList = await _shoppingCartService.GetAllShoppingCartsForUserAsync(userId);
+        var totalOrderPirce = _shoppingCartService.CalculateTotalOrderPrice(cartList);
+
+        ShoppingCartVM.CartList = cartList;
+
+        await _shoppingCartService.CreateOrderHeader(
+            orderHeader: ShoppingCartVM.OrderHeader,
+            user: applicationUser,
+            totalPrice: totalOrderPirce);
+
+        await _shoppingCartService.CreateOrderDetails(cartList, ShoppingCartVM.OrderHeader);
+        return RedirectToAction(nameof(OrderConfirmation), new { id = ShoppingCartVM.OrderHeader.Id });
+    }
+
+    public IActionResult OrderConfirmation(int id)
+    {
+        return View(id);
+    }
     public async Task<IActionResult> Plus(int cartId)
     {
         await _shoppingCartService.IncrementProductCountAsync(cartId);
