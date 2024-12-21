@@ -5,6 +5,13 @@ name: CI Pipeline for .NET
 
 on:
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Select tag to deploy'
+        required: true
+        default: latest
+        type: choice
+        options: ${{ steps.list_tags.output.tags }}
   push:
     branches: [ "main" ]
   pull_request:
